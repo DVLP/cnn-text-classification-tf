@@ -39,14 +39,7 @@ class MessageHandler(object):
         predictions = self.graph.get_operation_by_name("output/predictions").outputs[0]
 
         # Generate batches for one epoch
-        batches = data_helpers.batch_iter(list(self.x_test), self.batch_size, 1, shuffle=False)
-
-        # Collect the predictions here
-        all_predictions = []
-
-        for x_test_batch in batches:
-            batch_predictions = self.sess.run(predictions, {input_x: x_test_batch, dropout_keep_prob: 1.0})
-            all_predictions = np.concatenate([all_predictions, batch_predictions])
+        all_predictions = self.sess.run(predictions, {input_x: list(self.x_test), dropout_keep_prob: 1.0})
 
         # Print accuracy if self.y_test is defined
         if self.y_test is not None:
