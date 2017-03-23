@@ -18,8 +18,8 @@ class MessageHandler(object):
         x_raw = [data_helpers.clean_str(data["text"])]
         x_test = np.array(list(self.vocab_processor.transform(x_raw)))
 
-        print("Input string: \"{}\"".format(data["text"]))
-        print("Calculating")
+        print("Input string: \"{}\"".format(data["text"]), flush=True)
+        print("Calculating", flush=True)
 
         # Load the saved meta self.graph and restore variables
         saver = tf.train.import_meta_graph("{}.meta".format(self.checkpoint_file))
@@ -43,4 +43,4 @@ class MessageHandler(object):
             "sentiment": predictions_human_readable[0][1]
         })
 
-        print("ANALYZE {}".format(stringified))
+        print("ANALYZE {}".format(stringified), flush=True)
