@@ -30,7 +30,7 @@ with graph.as_default():
     sess = tf.Session()
     with sess.as_default():
         handler = MessageHandler(sess, checkpoint_file, graph, vocab_processor)
-        print("Awaiting messages")
+        print("READY")
         while True:
             line = sys.stdin.readline()
 

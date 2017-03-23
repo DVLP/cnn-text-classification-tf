@@ -2,6 +2,7 @@ import os
 import data_helpers
 import tensorflow as tf
 import numpy as np
+import json
 
 class MessageHandler(object):
     def __init__(self, sess, checkpoint_file, graph, vocab_processor):
@@ -11,17 +12,13 @@ class MessageHandler(object):
         self.vocab_processor = vocab_processor
 
     def handle(self, line):
-        line = line[:-1]  # Remove newline from line end
-        print("String {} to be handled".format(line))
+        self.analyze(json.loads(line))
 
-        if line.startswith("calculate"):
-            self.calculate(line[len("calculate") + 1:])
-
-    def calculate(self, text):
-        x_raw = [data_helpers.clean_str(text)]
+    def analyze(self, data):
+        x_raw = [data_helpers.clean_str(data["text"])]
         x_test = np.array(list(self.vocab_processor.transform(x_raw)))
 
-        print("Input string: \"{}\"".format(text))
+        print("Input string: \"{}\"".format(data["text"]))
         print("Calculating")
 
         # Load the saved meta self.graph and restore variables
@@ -41,4 +38,9 @@ class MessageHandler(object):
 
         # Save the evaluation to a csv
         predictions_human_readable = np.column_stack((np.array(x_raw), all_predictions))
-        print("Output: {}".format(predictions_human_readable[0]))
+        stringified = json.dumps({
+            "id": data["id"],
+            "sentiment": predictions_human_readable[0][1]
+        })
+
+        print("ANALYZE {}".format(stringified))
