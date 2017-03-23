@@ -17,7 +17,7 @@ checkpoint_dir = "./runs/1490234541/checkpoints"
 vocab_path = os.path.join(checkpoint_dir, "..", "vocab")
 vocab_processor = learn.preprocessing.VocabularyProcessor.restore(vocab_path)
 
-print("\nEvaluating...\n")
+print("\nEvaluating...\n", flush=True)
 
 # Evaluation
 # ==================================================
@@ -30,7 +30,8 @@ with graph.as_default():
     sess = tf.Session()
     with sess.as_default():
         handler = MessageHandler(sess, checkpoint_file, graph, vocab_processor)
-        print("READY")
+        print("READY", flush=True)
+
         while True:
             line = sys.stdin.readline()
 
