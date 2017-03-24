@@ -11,7 +11,7 @@ from tensorflow.contrib import learn
 # Parameters
 # ==================================================
 
-checkpoint_dir = "./runs/1490234541/checkpoints"
+checkpoint_dir = "./runs/timestamp/checkpoints"
 
 # Map data into vocabulary
 vocab_path = os.path.join(checkpoint_dir, "..", "vocab")
