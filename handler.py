@@ -5,9 +5,8 @@ import numpy as np
 import json
 
 class MessageHandler(object):
-    def __init__(self, sess, checkpoint_file, graph, vocab_processor):
+    def __init__(self, sess, graph, vocab_processor):
         self.sess = sess
-        self.checkpoint_file = checkpoint_file
         self.graph = graph
         self.vocab_processor = vocab_processor
 
@@ -20,10 +19,6 @@ class MessageHandler(object):
 
         print("Input string: \"{}\"".format(data["text"]), flush=True)
         print("Calculating", flush=True)
-
-        # Load the saved meta self.graph and restore variables
-        saver = tf.train.import_meta_graph("{}.meta".format(self.checkpoint_file))
-        saver.restore(self.sess, self.checkpoint_file)
 
         # Get the placeholders from the self.graph by name
         input_x = self.graph.get_operation_by_name("input_x").outputs[0]

@@ -29,7 +29,11 @@ with graph.as_default():
     # sess = tf.Session(config=session_conf)
     sess = tf.Session()
     with sess.as_default():
-        handler = MessageHandler(sess, checkpoint_file, graph, vocab_processor)
+        # Load the saved meta self.graph and restore variables
+        saver = tf.train.import_meta_graph("{}.meta".format(checkpoint_file))
+        saver.restore(sess, checkpoint_file)
+
+        handler = MessageHandler(sess, graph, vocab_processor)
         print("READY", flush=True)
 
         while True:
