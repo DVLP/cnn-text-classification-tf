@@ -17,17 +17,18 @@ def stream(str):
     sys.stdout.flush()
 
 
-x_text = []
-y = []
+datasets = dict()
+datasets['data'] = []
+datasets['target'] = []
+datasets['target_names'] = ['positive_examples', 'negative_examples']
 
 
 def decodeData(data):
     global x_text, y
 
     json_data = json.loads(data)
-    x_text.append(json_data[0])
-    label = [0, 1] if json_data[1] == 1 else [1, 0]
-    y.append(label)
+    datasets['data'].append(json_data[0])
+    datasets['target'].append(json_data[1])
 
 
 stream("READY")
@@ -58,7 +59,7 @@ while True:
 
 stream("Decoding finished")
 
-y = np.array(y)
+x_text, y = data_helpers.load_data_labels(datasets)
 
 # Parameters
 # ==================================================
@@ -92,6 +93,8 @@ for attr, value in sorted(FLAGS.__flags.items()):
     stream("{}={}".format(attr.upper(), value))
 stream("")
 
+embedding_dimension = 300
+word2vec_path = "./data/GoogleNews-vectors-negative300.bin"
 
 # Data Preparation
 # ==================================================
@@ -133,7 +136,7 @@ with tf.Graph().as_default():
             sequence_length=x_train.shape[1],
             num_classes=y_train.shape[1],
             vocab_size=len(vocab_processor.vocabulary_),
-            embedding_size=FLAGS.embedding_dim,
+            embedding_size=embedding_dimension,
             filter_sizes=list(map(int, FLAGS.filter_sizes.split(","))),
             num_filters=FLAGS.num_filters,
             l2_reg_lambda=FLAGS.l2_reg_lambda)
@@ -185,6 +188,16 @@ with tf.Graph().as_default():
 
         # Initialize all variables
         sess.run(tf.global_variables_initializer())
+
+        vocabulary = vocab_processor.vocabulary_
+        # load embedding vectors from the word2vec
+        stream("Load word2vec file {}".format(word2vec_path))
+        initW = data_helpers.load_embedding_vectors_word2vec(vocabulary,
+                                                             word2vec_path,
+                                                             True)
+        stream("Running w2v")
+        sess.run(cnn.W.assign(initW))
+        stream("Finished w2v")
 
         def train_step(x_batch, y_batch):
             """
